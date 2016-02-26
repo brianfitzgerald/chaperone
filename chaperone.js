@@ -22,19 +22,18 @@ var params = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 	Slack bot integration
 */
 
-var controller = Botkit.slackbot({
-    debug: true,
-});
+var controller = Botkit.slackbot();
 
 var bot = controller.spawn({
-    token: params.token
+    token: params.slack_token
 }).startRTM();
 
 
 controller.hears(['invite me (.*)', 'sign me up (.*)', 'invite (.*)'], 'direct_message', function (bot, message) {
-	var matches = message.text.match(/call me (.*)/i);
+	var matches = message.text.match(/invite (.*)/i);
 	var username = matches[1];
 
+	console.log(username + " signed up");
 	org.addMember(username, {}, function (err, data, headers) {
 		if (err) console.log(err);
 		if (data) {
@@ -42,16 +41,11 @@ controller.hears(['invite me (.*)', 'sign me up (.*)', 'invite (.*)'], 'direct_m
 			bot.reply('You\'re in! Now, check out our projects here: https://github.com/mizzou-hackers/');
 		}
 	});
-
 });
 
 controller.hears(['hello','hi'],'direct_message,direct_mention,mention',function(bot, message) {
     controller.storage.users.get(message.user,function(err, user) {
-        if (user && user.name) {
-            bot.reply(message,'Hello ' + user.name + '!!');
-        } else {
-            bot.reply(message,'Hello.');
-        }
+		bot.reply(message,'What\'s good my man.');
     });
 });
 
@@ -131,10 +125,7 @@ function formatUptime(uptime) {
 	Github integration
 */
 
-var client = github.client({
-	username: params.username,
-	password: params.password
-});
+var client = github.client(params.github_token);
 var org = client.org(params.organization);
 
 if (program.info) {
