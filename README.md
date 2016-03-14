@@ -1,2 +1,4 @@
 # chaperone
-A bot that auto-invites people to a GitHub organization
+A bot that managers GitHub organization access
+
+Simply spin up a server and fill out the config.json with you're credentials
